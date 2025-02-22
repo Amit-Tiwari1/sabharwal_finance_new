@@ -137,7 +137,6 @@ export default function BranchPage() {
   };
 
   const handleEditBranch = (branch: BranchTypes) => {
-    console.log("Editing Branch ID:", branch.id);
 
     setSelectedBranchId(branch.id);
     setFormData({
@@ -153,7 +152,7 @@ export default function BranchPage() {
       contactEmail: branch.contactEmail || "",
       contactNo: branch.contactNo || "",
       gstNo: branch.gstNo || "",
-      openDate: branch.openDate ? branch.openDate.split("T")[0] : "", // Format Date
+      openDate: branch.openDate ? branch.openDate.split("T")[0] : "",
     });
 
     setEditMode(true);
@@ -208,7 +207,6 @@ export default function BranchPage() {
               <Tooltip content="Edit Branch">
                 <span className="cursor-pointer text-blue-600 hover:text-blue-800 transition"
                 onClick={()=>{
-                    console.log("branchid ", branch.id);
                     handleEditBranch(branch);
                 }}
                 >

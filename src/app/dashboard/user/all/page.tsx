@@ -55,6 +55,7 @@ const SignupPage = () => {
   const [allRoles, setAllRoles] = useState<roleTypes[]>([]);
   const [allBranchs, setallBranchs] = useState<BranchTypes[]>([]);
   const [selectedBranches, setSelectedBranches] = useState<number[]>([]);
+  const [editMode, setEditMode] = useState(false);
 
   const [previewImage, setPreviewImage] = useState<string>("");
   const [formData, setFormData] = useState({
@@ -225,6 +226,29 @@ const SignupPage = () => {
     }
   };
 
+  const handleUpdateUser = (user:UserType)=>{
+if(user.id){
+  setFormData({
+    username: user.username,
+    fullName: user.fullName,
+    email: user.email,
+    mobilenumber: user.mobilenumber,
+    basicsalary: String(user.basicsalary),
+    roleId: String(user.role),
+    address1: user.address1,
+    landmark:  "",
+    city: user.city,
+    state: user.state,
+    pin: user.pin,
+    userpic: user.userpic as File | null,
+    password: "",
+  })
+  setEditMode(true)
+  setAddNewUser(true)
+}
+
+  }
+
   const renderCell = React.useCallback((user: UserType, columnKey: string) => {
     switch (columnKey) {
       case "profile":
@@ -296,7 +320,11 @@ const SignupPage = () => {
               </span>
             </Tooltip>
             <Tooltip content="Edit user">
-              <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+              <span className="text-lg text-default-400 cursor-pointer active:opacity-50"
+              onClick={()=>{
+                handleUpdateUser(user)
+              }}
+              >
                 <EditIcon />
               </span>
             </Tooltip>
@@ -364,7 +392,7 @@ const SignupPage = () => {
           {(onClose) => (
             <>
               <ModalHeader className="text-lg font-semibold mb-4">
-                Add New User
+               {editMode ? "Update User":" Add New User"}
               </ModalHeader>
               <ModalBody>
                 <div className="w-full bg-white shadow-md rounded-md p-6">
@@ -548,7 +576,7 @@ const SignupPage = () => {
                       fullWidth
                       className="mt-4"
                     >
-                      Signup
+                      {editMode?"Update":"Save"}
                     </Button>
                   </form>
                 </div>
