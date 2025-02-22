@@ -1,0 +1,144 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id                        Int      @id @default(autoincrement())
+  username                  String
+  fullName                  String
+  email                     String   @unique
+  mobilenumber              String
+  roleId                    Int
+  basicsalary               Int
+  address1                  String
+  landmark                  String?
+  city                      String
+  state                     String
+  pin                       String
+  password                  String
+  userpic                   String?
+  isverified                Boolean  @default(false)
+  isdeleted                 Boolean  @default(false)
+  isactive                  Boolean  @default(true)
+  forgetpasswordtoken       String?  @unique
+  forgetpasswordtokenexpiry DateTime?
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+
+  role                      Role     @relation(fields: [roleId], references: [roleId])
+  branches                  UserBranch[]
+}
+
+model Role {
+  roleId          Int      @id @default(autoincrement())
+  roleName        String   @unique
+  roleDescription String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  users          User[]
+  rolePermissions RoleMenuPermission[]
+}
+
+model Menu {
+  MenuId       Int      @id @default(autoincrement())
+  MenuName     String
+  MenuParentId Int?
+  MenuUrl      String
+  icon         String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  
+  ParentMenu  Menu?    @relation("MenuToParent", fields: [MenuParentId], references: [MenuId])
+  Submenus    Menu[]   @relation("MenuToParent")
+
+  rolePermissions RoleMenuPermission[]
+}
+
+model RoleMenuPermission {
+  id         Int      @id @default(autoincrement())
+  roleId     Int
+  menuId     Int
+  canCreate  Boolean @default(false)
+  canRead    Boolean @default(true)
+  canUpdate  Boolean @default(false)
+  canDelete  Boolean @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  role Role @relation(fields: [roleId], references: [roleId])
+  menu Menu @relation(fields: [menuId], references: [MenuId])
+}
+
+// company profile 
+
+model CompanyDetails {
+  id                 String  @id @default(uuid())
+  softwareUrl        String
+  website           String?
+  companyName        String
+  shortName          String
+  about             String?
+  CIN               String  @unique
+  PAN               String  @unique
+  TAN               String?
+  GSTNo             String?
+  category          String?
+  class             String?
+  authorizedCapital Decimal @default(0.00)
+  paidUpCapital     Decimal @default(0.00)
+  shareNominalValue Decimal @default(0.00)
+  stateRegistration String?
+  incorporationDate DateTime
+  address          String?
+  email            String  @unique
+  phone            String?
+  landlineNo       String?
+
+  @@map("company_details")
+}
+
+model Branch {
+  id            Int      @id @default(autoincrement())
+  branchName    String
+  branchCode    String   @unique
+  openDate      DateTime
+  ifscCode      String   @unique
+  address1      String
+  address2      String?
+  city          String
+  state         String
+  pincode       String
+  country       String
+  contactEmail  String   @unique
+  contactNo     String
+  landlineNo    String?
+  gstNo         String?
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  users         UserBranch[]
+}
+
+model UserBranch {
+  id       Int    @id @default(autoincrement())
+  userId   Int
+  branchId Int
+
+ 
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  branch   Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, branchId])
+}
